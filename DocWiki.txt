@@ -1,0 +1,50 @@
+
+J'ai regroupé ici toutes les avancées faites par chacun sur le "forum" :
+http://www.dealabs.com/bons-plans/prise-wifi-/85521?page=36
+
+Il faut remplacer l'IP 192.168.0.25 par votre IP.
+Le login/Mot de pase par défaut est admin/admin
+
+
+Acces aux pages web hebergées par la prise
+===========================================
+http://admin:admin@192.168.0.25/rd.asp
+
+puis Administration > System Command
+
+Liste des commandes :
+---------------------
+GpioForCrond 1 : Allumer
+GpioForCrond 0 : Eteindre
+GetInfo I : Intensite courante
+GetInfo V : Tension courante en milli-Volts
+GetInfo W : Consommation courante en centi-Watts
+GetInfo E : Conso depuis le dernier reset, en mWatts/h
+
+
+Utilisation avec wget
+======================
+Eteindre : 
+wget -O - -q --post-data="command=GpioForCrond%200&SystemCommandSubmit=Apply" http://admin:admin@192.168.0.25/goform/SystemCommand
+
+Allumer : 
+wget -O - -q --post-data="command=GpioForCrond%201&SystemCommandSubmit=Apply" http://admin:admin@192.168.0.25/goform/SystemCommand
+
+Lire le résultat de la commande :
+wget -O - -q http://admin:admin@192.168.0.25/adm/system_command.asp
+
+Utilisation avec curl
+======================
+
+Utilisation via un formulaire web
+==================================
+Voir le fichier Command.html
+
+Accés telnet
+=============
+telnet 192.168.0.25
+login admin
+pwd admin
+
+Allumer : GpioForCrond 1
+Eteindre : GpioForCrond 0
