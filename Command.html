@@ -2,15 +2,6 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
 <body>
-<script>
-function SetConfig() {
-    var x = document.SystemCommand.action = "http://192.1.1.1/goform/SystemCommand";
-}
-</script>
-<form method="post" name="Config">
-<input type="text" name="IP">
-<button onclick="SetConfig()">Valider l'IP</button>
-</form>
 <form method="post" name="SystemCommand" action="http://192.168.0.25/goform/SystemCommand">
 <input type="hidden" name="command">
 <input value="Allumer" id="syscommandApply1" name="On" onclick="document.SystemCommand.command.value = 'GpioForCrond 1'; return true;" type="submit">
