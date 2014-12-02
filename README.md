@@ -3,5 +3,5 @@ SmartPlug
 
 Utilisation du SmartPlug Maginon SP-1E
 
-
-Voir le fichier DocWiki.txt pour les diverses méthodes de pilotage de la prise
+Pensez à aller voir le Wiki :
+https://github.com/supermat/SmartPlug/wiki
