@@ -1,0 +1,4 @@
+Pour fonctionner, il faut également télécharger jQuery 1.11 (http://code.jquery.com/jquery-1.11.1.js)
+et le déposer dans un répertoire annexe nommé js
+ou dans le même répertoire en modifiant la ligne 8 de master_plug.html comme suit :
+<script type="text/javascript" src="jquery-1.11.1.js"></script>
