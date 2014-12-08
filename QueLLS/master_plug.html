@@ -5,7 +5,7 @@
 	<link rel="stylesheet" type="text/css" href="main.css" />
 </HEAD>
 <BODY>  
-	<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="jquery-1.11.1.js"></script>
 	<script type="text/javascript" src="smartplug.js"></script>
 	<script type="text/javascript">
 
@@ -18,30 +18,208 @@
 	Page de contrôle d'une prise SP-01 (Aldi)
 </div>
 
+
 <div class="pgui-edit-form">
-	<div class="form-actions"></div>
     <form id="params" name="params" class="form-horizontal">
 	<fieldset>
-		<div class="label-container">
-			<label class="control-label" for="ip">
-				Adresse IP de la prise : 
-			</label>
-		</div>
-		<div class="controls">
-			<input type="txt" name="ip" value ="192.168.0.131">
-		</div>
 
+	<h2>Commandes Instantanées : </h2>
+	<div class="label-container">
+		<label class="control-label" for="ip">
+			Adresse IP de la prise : 
+		</label>
+	</div>
+	<div class="controls">
+		<input type="txt" name="ip" value ="192.168.0.131">
+	</div>
+	<div class="controls" id="#status">
+	</div>
 	<div class="form-actions">
 		<div class="btn-toolbar">
 			<div class="btn-group">
 				<input class="btn btn-primary" type="button" value="Allumer" onclick="javascript:setPlugOnOff(document.params.ip.value, 1);"> 
-				<input class="btn btn" type="button" value="Eteindre" onclick="javascript:setPlugOnOff(document.params.ip.value, 0);"> 
+ 				<input class="btn btn" type="button" value="Eteindre" onclick="javascript:setPlugOnOff(document.params.ip.value, 0);"> 
+			</div>
+			<div class="btn-group">
+				<input class="btn btn-info" type="button" value="Etat" onclick="javascript:getStatus(document.params.ip.value, '#status');"> 
 			</div>
 		</div>
 	</div>
+
+	<h2>Commandes Planifiées : </h2>
+    <table
+		id="planGrid"
+		class="pgui-grid grid legacy stripped">
+		<thead>
+			<tr class="header">
+				<th>
+                    <span>N° Emplacement</span>
+                </th>
+                <th>
+                    <span>Action</span>
+                </th>			
+				<th>
+                    <span>Heure de début</span>
+                </th>
+                <th>
+                    <span>Heure de fin</span>
+                </th>
+            </tr>
+		</thead>
+		<tbody>
+			<tr class="pg-row">
+                    <td style="">1</td>
+                    <td id="GreenAPAction1" style=""></td>
+                    <td id="GreenAPStart1" style=""></td>
+                    <td id="GreenAPEnd1" style=""></td>
+			</tr>
+			<tr class="pg-row">
+                    <td style="">2</td>
+                    <td id="GreenAPAction2" style=""></td>
+                    <td id="GreenAPStart2" style=""></td>
+                    <td id="GreenAPEnd2" style=""></td>
+			</tr>
+			<tr class="pg-row">
+                    <td style="">3</td>
+                    <td id="GreenAPAction3" style=""></td>
+                    <td id="GreenAPStart3" style=""></td>
+                    <td id="GreenAPEnd3" style=""></td>
+			</tr>
+			<tr class="pg-row">
+                    <td style="">4</td>
+                    <td id="GreenAPAction4" style=""></td>
+                    <td id="GreenAPStart4" style=""></td>
+                    <td id="GreenAPEnd4" style=""></td>
+			</tr>
+		</tbody>
+	</table>
+	<textarea id="plugPlan" class="well" style="display:none">
+	</textarea>
+	
+	<h3>Nouvelle action : </h3>
+	<div class="controls">
+<script language="JavaScript" type="text/javascript">
+	  var item = "<div class=\"label-container\"><label class=\"control-label\" for=\"GAPSlot\">";
+	  item += "N° emplacement :&nbsp;";
+	  item += "</label></div>";
+	  item += "<div class=\"controls\">";
+	  item += "<select name=\"GAPSlot\" class=\"span1\">";
+	  for(var i=1;i<=4;i++)
+	  {
+		  item += "<option value=\""+i+"\">"+i+"</option>";
+	  }
+	  item += "</select>&nbsp;";
+	  item += "</div>";
+	  document.write(item);
+
+	  var item = "<div class=\"label-container\"><label class=\"control-label\" for=\"GAPSHour\">";
+	  item += "Heure de début :&nbsp;";
+	  item += "</label></div>";
+	  item += "<div class=\"controls\">";
+	  item += "<select name=\"GAPSHour\" class=\"span1\">";
+	  for(var i=0;i<24;i++)
+	  {
+		  if (i < 10)
+			  item += "<option value=\""+i+"\">0"+i+"</option>";
+		  else
+			  item += "<option value=\""+i+"\">"+i+"</option>";
+	  }
+	  item += "</select>&nbsp;:&nbsp;";
+	  document.write(item);
+
+	  var item = "<select name=\"GAPSMinute\" class=\"span1\">";
+	  for(var i=0;i<60;i++)
+	  {
+		  if (i < 10)
+			  item += "<option value=\""+i+"\">0"+i+"</option>";
+		  else
+			  item += "<option value=\""+i+"\">"+i+"</option>";
+	  }
+	  item += "</select>&nbsp;";
+	  item += "</div>";
+	  document.write(item);
+
+	  var item = "<div class=\"label-container\"><label class=\"control-label\" for=\"GAPEHour\">";
+	  item += "Heure de fin :&nbsp;";
+	  item += "</label></div>";
+	  item += "<div class=\"controls\">";
+	  item += "<select name=\"GAPEHour\" class=\"span1\">";
+	  for(var i=0;i<24;i++)
+	  {
+		  if (i < 10)
+			  item += "<option value=\""+i+"\">0"+i+"</option>";
+		  else
+			  item += "<option value=\""+i+"\">"+i+"</option>";
+	  }
+	  item += "</select>&nbsp;:&nbsp;";
+	  document.write(item);
+
+	  var item = "<select name=\"GAPEMinute\" class=\"span1\">";
+	  for(var i=0;i<60;i++)
+	  {
+		  if (i < 10)
+			  item += "<option value=\""+i+"\">0"+i+"</option>";
+		  else
+			  item += "<option value=\""+i+"\">"+i+"</option>";
+	  }
+	  item += "</select>";
+	  item += "</div>";
+	  document.write(item);
+
+	  var item = "<div class=\"label-container\"><label class=\"control-label\" for=\"GAPAction\">";
+	  item += "Action :&nbsp;";
+	  item += "</label></div>";
+	  item += "<div class=\"controls\">";
+	  item += "<select name=\"GAPAction\">";
+	  item += "<option value=\"Disable\">Eteindre</option>";
+	  item += "<option value=\"ON\">Allumer</option>";
+	  item += "<option value=\"WiFiOFF\">WiFi TxPower OFF</option>";
+	  item += "<option value=\"TX25\">WiFi TxPower 25%</option>";
+	  item += "<option value=\"TX50\">WiFi TxPower 50%</option>";
+	  item += "<option value=\"TX75\">WiFi TxPower 75%</option>";
+	  item += "</select>";
+	  item += "</div>";
+	  document.write(item);
+
+	function postPlan(target) {
+		// appelle la mise à jour
+		setPlugTimerAction(document.params.ip.value, document.params.GAPSlot.value, document.params.GAPAction.value, document.params.GAPSHour.value, document.params.GAPSMinute.value, document.params.GAPEHour.value, document.params.GAPEMinute.value, target); 
+		showPlan(target);
+	}
+	
+	function showPlan(target) {
+		// mise à jour fictive, slot = 0
+		setPlugTimerAction(document.params.ip.value, 0, '', 0, 0, 0, 0, target); 
+		// récupère la valeur et l'écrit dans la table
+		var lines = $(target).val().split('\n');
+		for(var i = 0;i < lines.length;i++){
+			var l = lines[i].split(": ");
+			if (l.length > 1) {
+				// ici j'utilise une astuce : si le replace ne marche pas, il retourne la valeur source, 
+				// donc si ce n'est pas une heure, le replace ne fonctionne pas.
+				// 2e astuce: dans le replace, j'ajoute systématiquement un zéro devant les heures minutes 
+				// et si j'ai 3 chiffres consécutifs, j'enlève le premier.
+				$('#'+l[0]).html(l[1].replace(/(\d+) (\d+)/,"0$2:0$1").replace(/\d(\d\d)/g, "$1"));
+			}
+		}
+	}
+	</script> 
+	</div>
+  
+	<div class="form-actions">
+		<div class="btn-toolbar">
+			<div class="btn-group">
+				<input class="btn btn-info" type="button" value="Infos planification" onclick="javascript:showPlan('#plugPlan');"> 
+			</div>
+			<div class="btn-group">
+				<input class="btn btn-primary" type="button" value="Planifier" onclick="javascript:postPlan('#plugPlan');"> 
+			</div>
+		</div>
+	</div>
+
 	</fieldset>
 	</form>
-
+	
 	<table class="form-horizontal" style="font-size:14px">
 		<tr>
 			<td class="label-container">
