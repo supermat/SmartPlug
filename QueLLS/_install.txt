@@ -1,0 +1,17 @@
+_install.txt
+
+Pour installer et utiliser master_plug.html :
+
+Pour utiliser master_plug.html, vous devez disposer d'un serveur Web avec PHP (type LAMP, WAMP, XAMPP, EasyPHP...)
+Déposer l'ensemble des fichiers dans le répertoire racine du serveur Web (ou au choix dans un sous répertoire)
+- master_plug.php
+- main.css
+- smartplug.js
+- ajax_proxy.php
+Télécharger jQuery 1.11 (http://code.jquery.com/jquery-1.11.1.js) et l'enregistrer au même endroit que les autres 
+pages avec le nom jquery-1.11.1.js
+
+Pour exécuter la page :
+- depuis le serveur Web : http://localhost/master_plug.html
+- depuis un poste client : http://adresse_ip_serveur_web/master_plug.html
+
