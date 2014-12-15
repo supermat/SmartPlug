@@ -4,10 +4,22 @@ Pour installer et utiliser master_plug.html :
 
 Pour utiliser master_plug.html, vous devez disposer d'un serveur Web avec PHP (type LAMP, WAMP, XAMPP, EasyPHP...)
 Déposer l'ensemble des fichiers dans le répertoire racine du serveur Web (ou au choix dans un sous répertoire)
-- master_plug.php
-- main.css
-- smartplug.js
-- ajax_proxy.php
+- master_plug.php		: page principale de commande et d'information
+- main.css				: feuille de style
+- smartplug.js			: librairie Javascript pour la commande des prises depuis la page principale
+- ajax_proxy.php		: Proxy PHP pour l'exécution des requêtes HTTP cross-domain
+- exec_plan.php			: page d'exécution du plan de programmation (nécessite une BDD)
+- record_state.php		: page d'enregistrement en base de données de l'état d'une prise (nécessite une BDD)
+- lib/config.php		: définition des paramètres d'accès à la BDD
+- lib/connect_db.php	: fonctions d'accès à la BDD (pas franchement une classe d'abstraction, mais un début)
+- lib/debug.php			: librairie PHP pour le débogage
+- lib/heures_soleil.php	: librairie PHP pour le calcul des heures de lever et coucher du soleil
+- lib/http_request.php	: librairie PHP pour les appels HTTP
+- lib/smartplug.php		: librairie PHP pour la commande des prises
+- sql/create_db.sql		: script de création de la base de données (MySQL)
+- sql/create_table.sql	: script de création des objets dans la BDD (MySQL)
+- sql/insert_data.sql	: script d'insertion des données dans la BDD (MySQL)
+
 Télécharger jQuery 1.11 (http://code.jquery.com/jquery-1.11.1.js) et l'enregistrer au même endroit que les autres 
 pages avec le nom jquery-1.11.1.js
 
@@ -15,3 +27,8 @@ Pour exécuter la page :
 - depuis le serveur Web : http://localhost/master_plug.html
 - depuis un poste client : http://adresse_ip_serveur_web/master_plug.html
 
+Pour utiliser les fonctionnalités nécessitant une BDD :
+- créer la base avec create_db.sql
+- créer les tables et les vues avec create_tables.sql
+- insérer les données de base avec insert_data.sql
+- créer, via l'interface d'admin de la BDD? un user sp_admin, mot de passe sp_admin avec les droits SELECT, INSERT (a minima)
