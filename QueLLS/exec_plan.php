@@ -131,7 +131,6 @@ open_mysql_connection();
 
 // lecture des tâches à effectuer
 $sql = "select * from exec_plan where time_slot is not null ";
-$sql .= " and ip_address = '192.168.0.191'";
 $sql .= " order by plug_name, time_slot";
 if ($debug) echo "sql=$sql<br>";
 
