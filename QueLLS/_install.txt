@@ -10,6 +10,7 @@ Déposer l'ensemble des fichiers dans le répertoire racine du serveur Web (ou a
 - ajax_proxy.php		: Proxy PHP pour l'exécution des requêtes HTTP cross-domain
 - exec_plan.php			: page d'exécution du plan de programmation (nécessite une BDD)
 - record_state.php		: page d'enregistrement en base de données de l'état d'une prise (nécessite une BDD)
+- show_plan.php			: page d'affichage de l'état courant des prises (nécessite une BDD)
 - lib/config.php		: définition des paramètres d'accès à la BDD
 - lib/connect_db.php	: fonctions d'accès à la BDD (pas franchement une classe d'abstraction, mais un début)
 - lib/debug.php			: librairie PHP pour le débogage
