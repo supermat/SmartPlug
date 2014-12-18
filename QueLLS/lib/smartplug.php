@@ -52,6 +52,7 @@ function setPlugTimer($p_name, $p_address, $p_params) {
 		</tbody>
 	</table>';
 	// Appel HTTP Request
+	$p_params["Content-type"]  = "application/x-www-form-urlencoded";
 	makeHTTPRequest($p_params); 
 
 }
@@ -65,16 +66,18 @@ function getPlugInfo($p_address, $p_info) {
 	global $debug;
 	// construit l'appel HTTP
 	$params = Array(
-		"url" => "http://".$p_address."/goform/SystemCommand", 
-		"command" => 'GetInfo '.$p_info
+		"url" 			=> "http://".$p_address."/goform/SystemCommand", 
+		"Content-type"  => "application/x-www-form-urlencoded",
+		"command" 		=> 'GetInfo '.$p_info,
 		);
 	// exécute la requête
 	$result = makeHTTPRequest($params);
+	if ($debug) echo "Retour HTTP = ".$result;
 	// parse le résultat pour trouver la valeur
 	$tag = 'textarea';
 	preg_match("/<".$tag."[^>]*>(.*?)<\\/".$tag.">/si", $result, $match);
 	$content = $match[1];
-	if ($debug) echo "Retour HTTP = ".$content;
+	if ($debug) echo "Contenu de la balise = ".$content;
 	$pattern = "/[^\s]\s+(\d*)/";
 	preg_match($pattern, $content, $match);
 	switch ($p_info) {
@@ -88,9 +91,63 @@ function getPlugInfo($p_address, $p_info) {
 			break;
 	}
 	
+	if ($debug) echo "Valeur retournée = ".$result;
 	return $result;
 }
 
+// getPlugPlan
+//	lit le plan d'exécution de la prise
+//	p_address = addresse IP de la prise
+//	p_slot = numéro d'emplacement
+//
+function getPlugPlan($p_address, $p_slot) {
+	global $debug;
+	// construit l'appel HTTP pour la lecture de l'action
+	$params = Array(
+		"url" 			=> "http://".$p_address."/goform/SystemCommand", 
+		"Content-type"  => "application/x-www-form-urlencoded",
+		"command" 		=> 'nvram_get 2860 GreenAPAction'.$p_slot,
+		);
+	// exécute la requête
+	$result = makeHTTPRequest($params);
+	if ($debug) echo "Retour HTTP = ".$result;
+	// parse le résultat pour trouver la valeur
+	$tag = 'textarea';
+	preg_match("/<".$tag."[^>]*>(.*?)<\\/".$tag.">/si", $result, $match);
+	$plan['action'] = $match[1];
+	
+	// construit l'appel HTTP pour la lecture de l'heure de début
+	$params = Array(
+		"url" 			=> "http://".$p_address."/goform/SystemCommand", 
+		"Content-type"  => "application/x-www-form-urlencoded",
+		"command" 		=> 'nvram_get 2860 GreenAPStart'.$p_slot,
+		);
+	// exécute la requête
+	$result = makeHTTPRequest($params);
+	if ($debug) echo "Retour HTTP = ".$result;
+	// parse le résultat pour trouver la valeur
+	$tag = 'textarea';
+	preg_match("/<".$tag."[^>]*>(.*?)<\\/".$tag.">/si", $result, $match);
+	$plan['start'] = preg_replace("/(\d+) (\d+)/", '$2:$1', $match[1]);
+
+	// construit l'appel HTTP pour la lecture de l'heure de fin
+	$params = Array(
+		"url" 			=> "http://".$p_address."/goform/SystemCommand", 
+		"Content-type"  => "application/x-www-form-urlencoded",
+		"command" 		=> 'nvram_get 2860 GreenAPEnd'.$p_slot,
+		);
+	// exécute la requête
+	$result = makeHTTPRequest($params);
+	if ($debug) echo "Retour HTTP = ".$result;
+	// parse le résultat pour trouver la valeur
+	$tag = 'textarea';
+	preg_match("/<".$tag."[^>]*>(.*?)<\\/".$tag.">/si", $result, $match);
+	$plan['end'] = preg_replace("/(\d+) (\d+)/", '$2:$1', $match[1]);
+
+	
+	if ($debug) echo "Valeur retournée = ".$plan;
+	return $plan;
+}
 
 ?>
 
