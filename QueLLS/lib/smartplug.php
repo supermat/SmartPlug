@@ -52,7 +52,6 @@ function setPlugTimer($p_name, $p_address, $p_params) {
 		</tbody>
 	</table>';
 	// Appel HTTP Request
-	$p_params["Content-type"]  = "application/x-www-form-urlencoded";
 	makeHTTPRequest($p_params); 
 
 }
