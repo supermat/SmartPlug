@@ -1,5 +1,9 @@
 _versions.txt
 
+2014.12.18	Ajout d'un paramètre group sur exec_plan.php pour exécuter uniquement la planification associée à ce groupe. Cela permet notamment d'exécuter des plans avec des périodicités différentes.
+			Ajout de l'enregistrement de la conso dans la table des actions (pour définir une planification)
+			Ajout d'une page show_plan.php pour afficher la planification courante des prises
+			Nouvelles fonctions dans les librairies smartplug.php et http_request.php
 2014.12.15	Ajout d'une page pour enregistrer l'état de la prise dans une base de données
 			La base de données peut contenir aussi une programmation journalière de l'allumage des prises.
 2014.12.08	Ajout d'un formulaire pour programmer la prise + affichage de la programmation courante.
