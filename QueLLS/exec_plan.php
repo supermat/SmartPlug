@@ -6,14 +6,25 @@
 </HEAD>
 <BODY>  
 
+<!--
+	Paramètres d'appel de la page :
+	<ul>
+	<li>date = date pour laquelle la planification est faite (par défaut : date du jour)</li>
+	<li>group = identifiant du groupe à exécuter (par défaut : tous)</li>
+	</ul>  
+-->
+
 <?php
 define('BASE', './');
 require_once(BASE.'lib/debug.php');
 require_once(BASE.'lib/heure_soleil.php');
 require_once(BASE.'lib/http_request.php');
+require_once(BASE.'lib/smartplug.php');
 
 $date = "";
 if (isset($_GET['date'])) $date=$_GET['date'];
+$group = "";
+if (isset($_GET['group'])) $group=$_GET['group'];
 
 // Initialisation de la date + Heures du soleil
 $today = new DateTime($date." 12:00:00");
@@ -30,61 +41,6 @@ if ($debug) {
 echo "Pour ce jour, <br/>";
 echo "le soleil se lève à : ".$sun["sunrise"]->format('H:i')."<br/>";
 echo "et se couche à : ".$sun["sunset"]->format('H:i')."<br/>";
-
-// function setPlugTimer
-//	programme une prise et affiche la commande à l'écran
-//	p_name = nom dela prise (pour l'affichage)
-//	p_address = adresse IP de la prise (pour l'affichage
-//	p_params = paramètres de la requête HTTP
-//
-function setPlugTimer($p_name, $p_address, $p_params) {
-	// affiche le contenu
-	echo "<h2>Exécution des commandes pour ".$p_name." (".$p_address.")</h2>";
-	// crée un tableau pour les emplacements
-	echo '
-	<table
-		id="planGrid"
-		class="pgui-grid grid legacy stripped">
-		<thead>
-			<tr class="header">
-				<th>
-                    <span>N° Emplacement</span>
-                </th>
-                <th>
-                    <span>Action</span>
-                </th>			
-				<th>
-                    <span>Heure de début</span>
-                </th>
-                <th>
-                    <span>Heure de fin</span>
-                </th>
-            </tr>
-		</thead>
-		<tbody>';
-	for ($i=1; $i<=4; $i++) {
-		// lecture des valeurs de paramètres
-		$action = "";
-		if (isset($p_params['GAPAction'.$i])) $action = $p_params['GAPAction'.$i];
-		$start = "";
-		if (isset($p_params['GAPSHour'.$i])) $start = $p_params['GAPSHour'.$i].":".$p_params['GAPSMinute'.$i];
-		$end = "";
-		if (isset($p_params['GAPEHour'.$i])) $end = $p_params['GAPEHour'.$i].":".$p_params['GAPEMinute'.$i];
-		// affichage des valeurs de paramètres
-		echo '<tr class="pg-row">';
-		echo '<td style="">'.$i.'</td>';
-		echo '<td id="GreenAPAction'.$i.'" style="">'.$action.'</td>';
-		echo '<td id="GreenAPStart'.$i.'" style="">'.$start.'</td>';
-		echo '<td id="GreenAPEnd'.$i.'" style="">'.$end.'</td>';
-		echo '</tr>';
-	}
-	echo '
-		</tbody>
-	</table>';
-	// Appel HTTP Request
-	makeHTTPRequest($p_params); 
-
-}
 
 // function replaceTags
 //	dans une chaine de caractère, remplace tous les tags <xxx> par la valeur du champ xxx de l'enregistrement
@@ -130,7 +86,9 @@ require_once(BASE.'lib/connect_db.php');
 open_mysql_connection();
 
 // lecture des tâches à effectuer
-$sql = "select * from exec_plan where time_slot is not null ";
+$sql = "select * from exec_plan where 1=1 ";
+//$sql .= " and ip_address = '192.168.0.191'";	//pour debug
+if ($group!="") $sql .= " and id_group = ".$group;
 $sql .= " order by plug_name, time_slot";
 if ($debug) echo "sql=$sql<br>";
 
@@ -145,18 +103,28 @@ if (!$res) {
 		// traitement des enregistrements du plan 1 à 1
 		$plug_name = "";
 		$plug_address = "";
-		$params = Array();
+		$params = Array(
+						"url" => "",
+					);
+		$last_url = "";
 		
 		while ($row = mysql_fetch_assoc($res)) {
+			$url = replaceTags($row["command"], $row);
 			// Test de rupture
-			if ($plug_address != "" && $plug_address != $row["ip_address"]) {
+			// - si l'enregistrement courant concerne une autre prise
+			// - ou une autre URL
+			// alors déclencher l'appel
+			if (($plug_address != "" && $plug_address != $row["ip_address"]) 
+				|| ($params["url"] != "" && $params["url"] != $url)) {
 				// exécution des commandes pour l'adresse de l'itération précédente
 				setPlugTimer($plug_name, $plug_address, $params);
 				// RAZ des variables
-				$params = Array();
+				$params = Array(
+								"url" => "",
+							);
 			} 
 			// init de la boucle
-			$plug_name = $row["plug_name"];
+			$plug_name = utf8_encode($row["plug_name"]);
 			$plug_address = $row["ip_address"];
 			if ($debug) 
 				echo "Traitement de l'enregistrement ".$row["plug_name"]." - Slot ".$row["time_slot"]."<br />";
@@ -196,30 +164,33 @@ if (!$res) {
 				}
 			}
 			// 4. Application de la variation d'horaire aléatoire
+			if ($debug) {
+				echo "Max Offset = ".$row["max_offset"]."<br />";
+				echo "Heures fixes = ".$row["f_fixed_hour"]."<br />";
+			}
 			$max_offset = $row["max_offset"];
 			if (!$row["f_fixed_hour"] && $max_offset>0) {
 				// variation sur l'heure de début
 				$offset = intval(rand(-$max_offset, $max_offset));
 				$start->modify($offset.' minutes');
+				if ($debug) echo "Application d'une variation de ".$offset." minutes sur l'heure de début<br />";
 				// variation sur l'heure de fin
 				$offset = intval(rand(-$max_offset, $max_offset));
 				$end->modify($offset.' minutes');
+				if ($debug) echo "Application d'une variation de ".$offset." minutes sur l'heure de fin<br />";
 			}
+			// Modification de l'enregistrement avec les nouvelles heures calculées
+			$row["start_time"] = $start->format('H:i:s');
+			$row["start_time_hr"] = $start->format('H');
+			$row["start_time_mn"] = $start->format('i');
+			$row["end_time"] = $start->format('H:i:s');
+			$row["end_time_hr"] = $end->format('H');
+			$row["end_time_mn"] = $end->format('i');
 
 			// fabrication du tableau de paramètres
 			//$params["url"] = 'http://'.$row["ip_address"].'/goform/GreenAP';
 			$params["url"] = replaceTags($row["command"], $row);
 			if ($condition) {
-				/*
-				$slot = $row["time_slot"];
-				$params["GAPAction".$slot] = $row["command"];
-				// calcul de l'heure de début
-				$params["GAPSHour".$slot] = $start->format('H');
-				$params["GAPSMinute".$slot] = $start->format('i');
-				// calcul de l'heure de fin
-				$params["GAPEHour".$slot] = $end->format('H');
-				$params["GAPEMinute".$slot] = $end->format('i');
-				*/
 				$params = array_merge($params, json_decode(replaceTags($row["parameters"], $row), true));
 			}
 			if ($debug) {
