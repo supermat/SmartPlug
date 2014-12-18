@@ -23,12 +23,13 @@ USE `smartplug`;
 
 LOCK TABLES `action` WRITE;
 /*!40000 ALTER TABLE `action` DISABLE KEYS */;
-INSERT INTO `action` VALUES 
-(1,'Allumer/Eteindre','ON','http://#ip_address#/goform/GreenAP','{\"GAPAction#time_slot#\":\"ON\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\", \"GAPEHour#time_slot#\":\"#end_time_hr#\", \"GAPEMinute#time_slot#\":\"#end_time_mn#\"}'),
-(2,'Activer le Wifi 50%','WiFiOFF','http://#ip_address#/goform/GreenAP','{\"GAPAction#time_slot#\":\"TX50\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\", \"GAPEHour#time_slot#\":\"#end_time_hr#\", \"GAPEMinute#time_slot#\":\"#end_time_mn#\"}'),
+INSERT INTO `action` (`id_action`, `name`, `type`, `command`, `parameters`) 
+VALUES 
+(1,'Allumer/Eteindre','ON','http://#ip_address#/goform/GreenAP','{\"Content-type\":\"application/x-www-form-urlencoded\", \"GAPAction#time_slot#\":\"ON\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\", \"GAPEHour#time_slot#\":\"#end_time_hr#\", \"GAPEMinute#time_slot#\":\"#end_time_mn#\"}'),
+(2,'Activer le Wifi 50%','WiFiOFF','http://#ip_address#/goform/GreenAP','{\"Content-type\":\"application/x-www-form-urlencoded\", \"GAPAction#time_slot#\":\"TX50\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\", \"GAPEHour#time_slot#\":\"#end_time_hr#\", \"GAPEMinute#time_slot#\":\"#end_time_mn#\"}'),
 (5,'Eteindre le Wifi',NULL,'http://#ip_address#/goform/SystemCommand','{\"command\":\"ifconfig ra0 down\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\"}'),
-(6,'Activer le Wifi 25%',NULL,'http://#ip_address#/goform/GreenAP','{\"GAPAction#time_slot#\":\"TX25\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\", \"GAPEHour#time_slot#\":\"#end_time_hr#\", \"GAPEMinute#time_slot#\":\"#end_time_mn#\"}'),
-(7,'Enregistrer la conso',NULL,'http://localhost/quells-dev/record_state.php','{\"mode\":\"fetch\", \"id\":\"#id_plug#\", \"ip_address\":\"#ip_address#\", \"nohelp\":\"true\"}');
+(6,'Activer le Wifi 25%',NULL,'http://#ip_address#/goform/GreenAP','{\"Content-type\":\"application/x-www-form-urlencoded\", \"GAPAction#time_slot#\":\"TX25\", \"GAPSHour#time_slot#\":\"#start_time_hr#\", \"GAPSMinute#time_slot#\":\"#start_time_mn#\", \"GAPEHour#time_slot#\":\"#end_time_hr#\", \"GAPEMinute#time_slot#\":\"#end_time_mn#\"}'),
+(7,'Enregistrer la conso',NULL,'http://localhost/quells/record_state.php','{\"mode\":\"fetch\", \"id\":\"#id_plug#\", \"ip_address\":\"#ip_address#\", \"nohelp\":\"true\"}');
 /*!40000 ALTER TABLE `action` ENABLE KEYS */;
 UNLOCK TABLES;
 
