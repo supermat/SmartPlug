@@ -43,7 +43,7 @@ CREATE  TABLE IF NOT EXISTS `smartplug`.`action` (
   `id_action` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(45) NULL COMMENT 'Nom del\'action (en français)' ,
   `type` VARCHAR(45) NULL COMMENT 'Type d\'action : immédiate ou planifiée' ,
-  `command` VARCHAR(45) NULL COMMENT 'Nom de la commande envoyée au serveur' ,
+  `command` VARCHAR(90) NULL COMMENT 'Nom de la commande envoyée au serveur' ,
   `parameters` TEXT NULL ,
   PRIMARY KEY (`id_action`) )
 ENGINE = InnoDB;
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS `smartplug`.`time_slot` (`slot` INT);
 -- -----------------------------------------------------
 -- Placeholder table for view `smartplug`.`exec_plan`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `smartplug`.`exec_plan` (`plug_name` INT, `ip_address` INT, `command` INT, `parameters` INT, `time_slot` INT, `days_of_week` INT, `start_time` INT, `start_time_hr` INT, `start_time_mn` INT, `end_time` INT, `end_time_hr` INT, `end_time_mn` INT, `f_enabled` INT, `f_follow_sun` INT, `f_fixed_hour` INT, `max_offset` INT);
+CREATE TABLE IF NOT EXISTS `smartplug`.`exec_plan` (`id_plug` INT, `plug_name` INT, `ip_address` INT, `time_slot` INT, `command` INT, `parameters` INT, `days_of_week` INT, `start_time` INT, `start_time_hr` INT, `start_time_mn` INT, `end_time` INT, `end_time_hr` INT, `end_time_mn` INT, `id_group` INT, `f_enabled` INT, `f_follow_sun` INT, `f_fixed_hour` INT, `max_offset` INT);
 
 -- -----------------------------------------------------
 -- View `smartplug`.`group_plugs`
@@ -214,11 +214,12 @@ DROP TABLE IF EXISTS `smartplug`.`exec_plan`;
 USE `smartplug`;
 CREATE OR REPLACE VIEW `smartplug`.`exec_plan` AS
 SELECT
+	S.id_plug,
 	S.name as plug_name,
 	S.ip_address,
+	P.time_slot,
 	A.command as command,
 	A.parameters,
-	P.time_slot,
 	CONCAT(
 	P.dow_sunday, 
 	P.dow_monday, 
@@ -234,6 +235,7 @@ SELECT
 	P.end_time,
 	DATE_FORMAT(P.end_time, "%H") AS end_time_hr,
 	DATE_FORMAT(P.end_time, "%i") AS end_time_mn,
+	G.id_group,
 	G.f_enabled,
 	G.f_follow_sun,
 	G.f_fixed_hour,
