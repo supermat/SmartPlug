@@ -135,8 +135,14 @@ if (!$res) {
 			//$today = date( "w", strtotime($date." 12:00:00"));
 			$condition &= (substr($row["days_of_week"], $today->format('w'), 1)=='1');
 			// 3. test de la pertinence d'allumer par rapport au soleil
-			$start =  DateTime::createFromFormat('H:i:s', $row["start_time"]);
-			$end =  DateTime::createFromFormat('H:i:s', $row["end_time"]);
+			if (is_null($row["start_time"])) 
+				$start = $today;
+			else 
+				$start =  DateTime::createFromFormat('H:i:s', $row["start_time"]);
+			if (is_null($row["end_time"])) 
+				$end = $today;
+			else 
+				$end =  DateTime::createFromFormat('H:i:s', $row["end_time"]);
 			if ($row["f_follow_sun"]) {
 				// Cas 1 : allumage le matin par rapport au lever du soleil
 				if ($start->format('H') < 12) {
