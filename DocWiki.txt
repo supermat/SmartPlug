@@ -3,7 +3,7 @@ J'ai regroupé ici toutes les avancées faites par chacun sur le "forum" :
 http://www.dealabs.com/bons-plans/prise-wifi-/85521?page=36
 
 Il faut remplacer l'IP 192.168.0.25 par votre IP.
-Le login/Mot de pase par défaut est admin/admin
+Le login/Mot de pase par défaut est admin/admin ; Adapter en fonction de vos besoins
 
 
 Acces aux pages web hebergées par la prise
@@ -48,3 +48,18 @@ pwd admin
 
 Allumer : GpioForCrond 1
 Eteindre : GpioForCrond 0
+
+Autre méthode, utilisant "gpio" :
+Allumer : gpio l 1 4000 1 0 0 4000
+Eteindre : gpio l 1 0 4000 1 0 4000
+
+Pour information, "gpio" comporte sa propre aide :
+# gpio
+Usage: gpio w - writing test (output)
+       gpio r - reading test (input)
+       gpio i (<gpio>) - interrupt test for gpio number
+       gpio l <gpio> <on> <off> <blinks> <rests> <times>
+            - set led on <gpio>(0~24) on/off interval, no. of blinking/resting cycles, times of blinking
+Cette fonction a été déduite sur base d'un post en anglais concernant le module NEATO : http://www.robotreviews.com/chat/viewtopic.php?f=20&t=17844&start=40 
+
+Toutes les commandes Telnet ci-dessus peuvent être passée dans Administration/System Command...
